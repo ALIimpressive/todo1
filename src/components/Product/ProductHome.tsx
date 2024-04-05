@@ -5,12 +5,14 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
 import ReplyAllIcon from "@mui/icons-material/ReplyAll";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 interface Props {
   name: string;
   type: string;
   price: number;
   image: string;
+  bull: boolean;
   id: number;
 }
 
@@ -22,12 +24,17 @@ function ProductHome() {
   const [favorites, setFavorites] = useState<Props[]>(
     JSON.parse(localStorage.getItem("favor") || "[]")
   );
+
   function addFavorite(id: number) {
+    const favAdd = favorites.some((product) => product.id === id);
+    if (favAdd) {
+      return;
+    }
     const favProduct = data.find((product) => product.id === id);
     if (favProduct) {
-      const res = [...favorites, favProduct];
-      setFavorites(res);
-      localStorage.setItem("favor", JSON.stringify(res));
+      const upFavorites = [...favorites, favProduct];
+      setFavorites(upFavorites);
+      localStorage.setItem("favor", JSON.stringify(upFavorites));
     }
   }
 
@@ -37,9 +44,11 @@ function ProductHome() {
     localStorage.setItem("sass", JSON.stringify(newData));
   }
 
-  const [mode, setMode] = useState(false);
+  const [mode, setMode] = useState<boolean>(false);
+  const [like, setLike] = useState<boolean>(false);
+
   const [values, setValues] = useState(() => {
-    const editData = JSON.parse(localStorage.getItem("sass") || "{}");
+    const editData = JSON.parse(localStorage.getItem("sass") as string);
     return {
       id: 0,
       name: editData.name || "",
@@ -59,6 +68,23 @@ function ProductHome() {
     setData(newData);
     localStorage.setItem("sass", JSON.stringify(newData));
     setMode(false);
+  }
+
+  function addLike(id: number) {
+    const newLike = data.map((el) => {
+      if (el.id === id) {
+        return { ...el, bull: !el.bull };
+      }
+      return el;
+    });
+    setData(newLike);
+    localStorage.setItem("sass", JSON.stringify(newLike));
+  }
+
+  function removeFavorite(id: number) {
+    const upFavorite = favorites.filter((el) => el.id !== id)
+    setFavorites(upFavorite)
+    localStorage.setItem("favor" , JSON.stringify(upFavorite))
   }
 
   return (
@@ -138,7 +164,7 @@ function ProductHome() {
               }}
               className="mode-btn"
             >
-              <button onClick={() => createEdit(values.id)}>CRAETE</button>
+              <button onClick={() => createEdit(values.id)}>CREATE</button>
             </div>
           </div>
           <div
@@ -175,9 +201,20 @@ function ProductHome() {
                   </button>
                   <button
                     style={{ background: "none" }}
-                    onClick={() => addFavorite(el.id)}
+                    onClick={() => {
+                      if (el.bull) {
+                        removeFavorite(el.id)
+                      } else {
+                        addFavorite(el.id);
+                      }
+                      addLike(el.id);
+                    }}
                   >
-                    <FavoriteBorderIcon sx={{ color: "white" }} />
+                    {el.bull ? (
+                      <FavoriteIcon sx={{ color: "red" }} />
+                    ) : (
+                      <FavoriteBorderIcon sx={{ color: "white" }} />
+                    )}
                   </button>
                   <AddShoppingCartIcon sx={{ color: "gold" }} />
                 </div>

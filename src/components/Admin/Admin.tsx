@@ -6,6 +6,7 @@ interface Props {
   type: string;
   price: number;
   image: string;
+  bull:boolean
 }
 
 function Admin() {
@@ -14,6 +15,7 @@ function Admin() {
     type: "",
     price: 0,
     image: "",
+    bull:false
   });
   function addPoduct() {
     let data = JSON.parse(localStorage.getItem("sass") || "[]");
