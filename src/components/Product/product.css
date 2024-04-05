@@ -1,0 +1,8 @@
+.favor {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7em;
+  margin: 20px 0;
+}
